@@ -12,9 +12,9 @@ Use `react-audio-mixer` to make music in your React apps!
 function App() {
 	return (
 		<AudioProvider>
-			<MicrophoneNode name="mic" />
+			<MicrophoneNode name="mic" echoCancellation noiseSuppression />
 			<GainNode name="gain" connect="mic" gain={0.5} />
-			<Speaker name="speaker" connect="gain" />
+			<SpeakerNode name="speaker" connect="gain" />
 		</AudioProvider>
 	);
 }
