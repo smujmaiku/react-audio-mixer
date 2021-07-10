@@ -1,0 +1,65 @@
+{
+	"env": {
+		"browser": true,
+		"es6": true,
+		"node": true,
+		"jest": true
+	},
+	"globals": {
+		"browser": false
+	},
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2020,
+		"sourceType": "module",
+		"ecmaFeatures": {
+			"jsx": true
+		}
+	},
+	"settings": {
+		"react": {
+			"version": "detect"
+		},
+		"import/resolver": {
+			"node": {
+				"paths": [
+					"src"
+				]
+			}
+		}
+	},
+	"extends": [
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"plugins": [
+		"react-hooks"
+	],
+	"rules": {
+		"react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+		"react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
+		"indent": [
+			2,
+			"tab"
+		],
+		"no-tabs": 0,
+		"no-restricted-syntax": [
+			"error",
+			"ForInStatement",
+			"LabeledStatement",
+			"WithStatement"
+		],
+		"no-multiple-empty-lines": "warn",
+		"import/no-named-as-default": 0,
+		"react/jsx-indent": [
+			2,
+			"tab"
+		],
+		"react/jsx-indent-props": [
+			2,
+			"tab"
+		],
+		// "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+		"react/jsx-filename-extension": 0
+	}
+}

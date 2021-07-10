@@ -1,0 +1,20 @@
+# build
+lib
+
+# npm
+node_modules
+package-lock.json
+
+# Coverage
+coverage
+benchmarks/graphs
+
+# General Garbage
+*.log
+*.gz
+.DS_Store*
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
