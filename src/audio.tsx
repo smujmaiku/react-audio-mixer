@@ -16,6 +16,7 @@ export { CustomNode } from './audioContext';
 
 export { default as MicrophoneNode } from './nodes/Microphone';
 export { default as StreamInNode } from './nodes/StreamIn';
+export { default as OscillatorNode } from './nodes/Oscillator';
 export { default as GainNode } from './nodes/Gain';
 export { default as AnalyserNode } from './nodes/Analyser';
 export { default as SpeakerNode } from './nodes/Speaker';

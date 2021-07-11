@@ -26,6 +26,32 @@ All nodes can be provided the following:
 * `connect?`: Name node(s) to take data from. Not available on input nodes
 * `onError?`: Error handler
 
+Some node attributes can take sequence values that correspond with [AudioParam][mdn-audioparam].
+These are provided as an Array `AudioParamSequence` in any comination of the following tuples:
+
+* `setValueAtTime`:
+  * `type`: 'setValue'
+  * `value`: number
+  * `startTime`: number
+* `linearRampToValueAtTime`:
+  * `type`: 'linearRamp'
+  * `value`: number
+  * `endTime`: number
+* `exponentialRampToValueAtTime`:
+  * `type`: 'exponentialRamp'
+  * `value`: number
+  * `endTime`: number
+* `setTargetAtTime`:
+  * `type`: 'setTarget'
+  * `target`: number
+  * `startTime`: number
+  * `timeConstant`: number
+* `setValueCurveAtTime`:
+  * `type`: 'setValueCurve'
+  * `values`: number[] | Float32Array
+  * `startTime`: number
+  * `duration`: number
+
 ### AudioProvider
 
 Creates an audio context for this module
@@ -72,6 +98,17 @@ const [devices, ready] = useAudioOutputDevices();
 
 * `stream`: MediaProvider
 
+### Oscillator Node
+
+* `type?`: Oscillator type;
+* `frequency`: Frequency
+* `frequencySequence?`: AudioParamSequence
+* `detune?`: detune
+* `detuneSequence?`: AudioParamSequence
+* `start?`: Start time
+* `end?`: End time
+* `onEnded?`: Ended handler
+
 ### Speaker Node
 
 * `deviceId?`: Media device id
@@ -83,6 +120,7 @@ const [devices, ready] = useAudioOutputDevices();
 ### Gain Node
 
 * `gain`: Gain value
+* `gainSequence?`: AudioParamSequence
 
 ### Analyser Node
 
@@ -119,3 +157,6 @@ function SomeNode(props) {
 ## License
 
 Copyright (c) 2021, Michael Szmadzinski. (MIT License)
+
+
+[mdn-audio-param]: https://developer.mozilla.org/en-US/docs/Web/API/AudioParam

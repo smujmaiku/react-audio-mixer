@@ -40,7 +40,10 @@
 		"react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
 		"indent": [
 			2,
-			"tab"
+			"tab",
+			{
+				"SwitchCase": 1
+			}
 		],
 		"no-tabs": 0,
 		"no-restricted-syntax": [
