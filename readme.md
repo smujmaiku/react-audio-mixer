@@ -124,8 +124,12 @@ const [devices, ready] = useAudioOutputDevices();
 
 ### Analyser Node
 
+* `type`: `frequency` or `waveform`
 * `fftSize?`: FFT size
 * `interval?`: Interval between updates
+* `min?`: Decibels minimum
+* `max?`: Decibels maximum
+* `floatBuffer?`: Update with Float32Array
 * `onUpdate`: Update data handler
 
 ### Custom Node
