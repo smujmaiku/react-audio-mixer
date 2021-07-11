@@ -154,6 +154,80 @@ function SomeNode(props) {
 }
 ```
 
+## Examples
+
+### PulseGain Node
+
+```jsx
+function PulseGain(props) {
+	const { name, connect, min = 0, max = 1, interval = 2000 } = props;
+	const { context } = useAudio();
+
+	const [gainSequence, setGainSequence] = useState();
+
+	useEffect(() => {
+		const update = () => {
+			const now = context.currentTime;
+			setGainSequence([
+				['linearRamp', max, interval / 2000 + now],
+				['linearRamp', min, interval / 1000 + now],
+			]);
+		};
+
+		update();
+		const timer = setInterval(update, interval);
+
+		return () => {
+			clearInterval(timer);
+		};
+	}, [context, min, max, interval]);
+
+	return (
+		<GainNode
+			name={name}
+			connect={connect}
+			gain={min}
+			gainSequence={gainSequence}
+		/>
+	);
+}
+```
+
+### RandomBeeps Node
+
+```jsx
+function RandomBeeps(props) {
+	const { name, min = 256, max = 512, length = 500, margin = 500 } = props;
+	const { context } = useAudio();
+
+	const [[frequency, start, end], setState] = useState([0, 0, 0]);
+
+	const updateState = useCallback((offset = 0) => {
+		const now = context.currentTime + offset;
+
+		setState([
+			min + (max - min) * Math.random(),
+			margin / 1000 + now,
+			(margin + length) / 1000 + now
+		]);
+	}, [context, min, max, length, margin]);
+
+	useEffect(() => {
+		updateState(-margin / 1000);
+	}, [margin, updateState]);
+
+	return frequency && (
+		<OscillatorNode
+			name={name}
+			frequency={frequency}
+			start={start}
+			end={end}
+			onEnded={updateState}
+		/>
+	);
+}
+```
+
 ## License
 
 Copyright (c) 2021, Michael Szmadzinski. (MIT License)
