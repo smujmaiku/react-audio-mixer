@@ -100,7 +100,7 @@ const [devices, ready] = useAudioOutputDevices();
 
 ### Oscillator Node
 
-* `type?`: Oscillator type;
+* `type?`: Oscillator type
 * `frequency`: Frequency
 * `frequencySequence?`: AudioParamSequence
 * `detune?`: detune
@@ -140,7 +140,13 @@ function SomeNode(props) {
 	const { name, connect, onError } = props;
 	const { context, ready } = useAudio();
 
-	// Make an AudioNode of some sort
+	const node = useMemo(() => {
+		try {
+			context.createDynamicsCompressor();
+		catch(e) {}
+	}, [context]);
+
+	// Do something with your node
 
 	return (
 		<CustomNode
@@ -208,7 +214,7 @@ function RandomBeeps(props) {
 		setState([
 			min + (max - min) * Math.random(),
 			margin / 1000 + now,
-			(margin + length) / 1000 + now
+			(margin + length) / 1000 + now,
 		]);
 	}, [context, min, max, length, margin]);
 
