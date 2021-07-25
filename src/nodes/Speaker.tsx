@@ -9,6 +9,8 @@ declare global {
 	}
 }
 
+const SETDEVICEID_ERROR_MSG = 'Cannot set deviceId as your browser does not support this feature';
+
 export interface SpeakerNodeProps {
 	name: string;
 	connect?: string[] | string;
@@ -21,7 +23,7 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 	const { context, ready } = useAudio();
 
 	const [devices] = useOutputDevices();
-	const isDeviceUnknown = devices.some((row) => row.deviceId === deviceId);
+	const isDeviceKnown = !deviceId || devices.some((row) => row.deviceId === deviceId);
 
 	const audio = useMemo(() => {
 		const audio = new Audio();
@@ -43,30 +45,41 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 	}, [audio, ready]);
 
 	useEffect(() => {
-		let cancel;
+		if (!audio || !ready) return;
 
-		(async () => {
-			if (!audio || !ready) return;
-			audio.muted = true;
+		let cancel = false;
+		audio.muted = true;
 
-			// TODO: make this work for everybody or send feedback
-			if (audio.setSinkId) {
+		const setBySinkId = async () => {
+			if (!audio.setSinkId) return;
+
+			try {
 				await audio.setSinkId('');
-				if (cancel || isDeviceUnknown) return;
+				if (cancel || !isDeviceKnown) return;
 
 				if (deviceId && deviceId !== 'default') {
 					await audio.setSinkId(deviceId);
-					if (cancel) return;
 				}
+			} catch (error) {
+				onError?.(error);
 			}
 
+			if (cancel) return;
 			audio.muted = false;
-		})().catch(() => { return; });
+		}
+
+		if (audio.setSinkId) {
+			setBySinkId();
+		} else if (deviceId) {
+			onError?.(new Error(SETDEVICEID_ERROR_MSG))
+		} else {
+			audio.muted = false;
+		}
 
 		return () => {
 			cancel = true;
 		};
-	}, [audio, node, deviceId, ready, isDeviceUnknown]);
+	}, [audio, node, deviceId, ready, isDeviceKnown, onError]);
 
 	if (!node) return null;
 
