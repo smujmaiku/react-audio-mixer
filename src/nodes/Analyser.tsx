@@ -7,6 +7,7 @@ export interface AnalyserNodePropsBase {
 	type: 'frequency' | 'waveform';
 	fftSize?: number;
 	interval?: number;
+	smoothing?: number;
 	min?: number;
 	max?: number;
 	onError?: (error: Error) => void;
@@ -30,6 +31,7 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 		type,
 		fftSize = FFT_MIN,
 		interval = 500,
+		smoothing = 0,
 		min = -100,
 		max = 0,
 		floatBuffer = false,
@@ -40,17 +42,24 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 
 	const node = useMemo(() => {
 		try {
-			const node = context.createAnalyser();
-			node.smoothingTimeConstant = interval / 1000;
-			node.fftSize = fftSize;
-			node.minDecibels = min;
-			node.maxDecibels = max;
-			return node;
+			return context.createAnalyser();
 		} catch (e) { }
-	}, [context, fftSize, interval, min, max]);
+	}, [context]);
+
+	useEffect(() => {
+		if (!node) return;
+		node.smoothingTimeConstant = smoothing;
+	})
+
+	useEffect(() => {
+		if (!node) return;
+		node.minDecibels = min;
+		node.maxDecibels = max;
+	}, [node, min, max]);
 
 	useEffect(() => {
 		if (!node || !ready) return;
+		node.fftSize = fftSize;
 
 		const buffer = floatBuffer ?
 			new Float32Array(node.frequencyBinCount) :
@@ -78,7 +87,7 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 		return () => {
 			clearInterval(timer);
 		};
-	}, [node, ready, type, floatBuffer, interval, onUpdate]);
+	}, [node, ready, type, floatBuffer, interval, fftSize, onUpdate]);
 
 	if (!node) return null;
 
