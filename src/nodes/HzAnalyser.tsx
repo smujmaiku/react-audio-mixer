@@ -60,7 +60,7 @@ export interface HzAnalyserProps {
 	onError?: (error: Error) => void;
 }
 
-export function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
+export default function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
 	const {
 		name,
 		connect,
