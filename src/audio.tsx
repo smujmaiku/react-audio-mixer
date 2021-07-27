@@ -11,6 +11,7 @@ import useAudio, {
 	AudioProvider as Provider,
 	AudioContextI
 } from './audioContext';
+
 export default useAudio;
 export { CustomNode } from './audioContext';
 
@@ -25,9 +26,11 @@ export { default as StreamOutNode } from './nodes/StreamOut';
 
 export {
 	default as useAudioDevices,
-	useInputDevices as useAudioInputDevices,
-	useOutputDevices as useAudioOutputDevices,
+	useInputDevices,
+	useOutputDevices,
 } from './devices';
+export { default as useGestured } from './gestured';
+export { default as useParam } from './param';
 
 export interface AudioProviderProps {
 	children?: React.ReactNode;

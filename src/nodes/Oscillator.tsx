@@ -47,19 +47,25 @@ export default function OscillatorNode(props: OscillatorProps): JSX.Element | nu
 
 			if (end) {
 				node.stop(end);
-				node.onended = () => {
-					onEndedRef.current?.();
-				}
 			}
 
 			return node;
 		} catch (e) { }
 	}, [ready, context, start, end]);
 
-	useEffect(() => () => {
+	useEffect(() => {
 		if (!node) return;
-		node.onended = null;
-		node.stop();
+
+		const handleEnded = () => {
+			if (!onEndedRef.current) return;
+			onEndedRef.current();
+		}
+		node.addEventListener('ended', handleEnded);
+
+		return () => {
+			node.removeEventListener('ended', handleEnded);
+			node.stop();
+		}
 	}, [node]);
 
 	useEffect(() => {
