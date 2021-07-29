@@ -49,7 +49,7 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 	useEffect(() => {
 		if (!node) return;
 		node.smoothingTimeConstant = smoothing;
-	})
+	}, [node, smoothing]);
 
 	useEffect(() => {
 		if (!node) return;

@@ -2,9 +2,9 @@ import React, { useCallback } from 'react';
 import useAudio, { FFT_MAX } from '../audioContext';
 import AnalyserNode from './Analyser';
 
-export type FftGroupT = [fft: number, volumn: number, jitter: number];
+export type FftGroupT = [fft: number, volume: number, jitter: number];
 
-const REDUCEFFTS_THRESHOLD = 0.04;	// About half a semitone
+const REDUCEFFTS_PADDING = 0.04;	// About half a semitone
 
 export function joinFftGroups(list: FftGroupT[]): FftGroupT {
 	return list.reduce((a, b) => {
@@ -12,14 +12,14 @@ export function joinFftGroups(list: FftGroupT[]): FftGroupT {
 		const [bfft, bvolume, bjitter] = b;
 		const sum = avolume + bvolume;
 		return [
-			(afft * avolume + bfft * bvolume) / sum || 0,
+			sum ? (afft * avolume + bfft * bvolume) / sum : 0,
 			sum,
 			ajitter + bjitter,
 		];
 	}, [0, 0, 0] as FftGroupT)
 }
 
-export function reduceFfts(ffts: Uint8Array, limit = 50, threshold = REDUCEFFTS_THRESHOLD): FftGroupT[] {
+export function reduceFfts(ffts: Uint8Array, padding = REDUCEFFTS_PADDING, limit = 0): FftGroupT[] {
 	const groups: FftGroupT[] = [];
 	let lastFft = 0;
 	let newGroup = true;
@@ -28,8 +28,8 @@ export function reduceFfts(ffts: Uint8Array, limit = 50, threshold = REDUCEFFTS_
 		const fft = parseInt(fftStr, 10);
 		if (!(fft >= 0)) continue;
 
-		if (volume < limit) {
-			newGroup ||= 1 - lastFft / fft > threshold;
+		if (volume <= limit) {
+			newGroup ||= 1 - lastFft / fft > padding;
 			continue;
 		}
 
@@ -37,9 +37,10 @@ export function reduceFfts(ffts: Uint8Array, limit = 50, threshold = REDUCEFFTS_
 			groups.push([0, 0, 0]);
 		}
 
+		const weightedVolume = volume / (fft + 1);
 		groups.push(joinFftGroups([
 			groups.pop() || [0, 0, 0],
-			[fft, volume / fft || 0, 1],
+			[fft, weightedVolume, 1],
 		]))
 
 		lastFft = fft;
@@ -52,8 +53,11 @@ export function reduceFfts(ffts: Uint8Array, limit = 50, threshold = REDUCEFFTS_
 export interface HzAnalyserProps {
 	name: string;
 	connect?: string[] | string;
+	smoothing?: number;
 	fftSize?: number;
 	interval?: number;
+	padding?: number;
+	limit?: number;
 	min?: number;
 	max?: number;
 	onUpdate: (list: FftGroupT[]) => void;
@@ -64,8 +68,11 @@ export default function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
 	const {
 		name,
 		connect,
+		smoothing = 0,
 		fftSize = FFT_MAX,
 		interval = 500,
+		padding = REDUCEFFTS_PADDING,
+		limit = 0,
 		min = -100,
 		max = 0,
 		onUpdate,
@@ -77,13 +84,14 @@ export default function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
 		const { sampleRate } = context;
 		const mag = sampleRate / fftSize;
 
-		const fftGroups = reduceFfts(buffer);
+		const fftGroups = reduceFfts(buffer, padding, limit);
 		const hzs = fftGroups.map(([fft, gain, jitter]) => ([fft * mag, gain, jitter] as FftGroupT));
 		onUpdate(hzs);
-	}, [context, fftSize, onUpdate]);
+	}, [context, fftSize, limit, padding, onUpdate]);
 
 	return <AnalyserNode
 		name={name}
+		smoothing={smoothing}
 		connect={connect}
 		fftSize={fftSize}
 		type="frequency"

@@ -13,7 +13,7 @@ import useAudio, {
 } from './audioContext';
 
 export default useAudio;
-export { CustomNode } from './audioContext';
+export { FFT_MIN, FFT_MID, FFT_MAX, CustomNode } from './audioContext';
 
 export { default as MicrophoneNode } from './nodes/Microphone';
 export { default as StreamInNode } from './nodes/StreamIn';
