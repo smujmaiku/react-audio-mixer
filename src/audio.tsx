@@ -21,6 +21,7 @@ export { default as OscillatorNode } from './nodes/Oscillator';
 export { default as GainNode } from './nodes/Gain';
 export { default as AnalyserNode } from './nodes/Analyser';
 export { default as HzAnalyserNode } from './nodes/HzAnalyser';
+export { default as NoteAnalyserNode } from './nodes/NoteAnalyser';
 export { default as SpeakerNode } from './nodes/Speaker';
 export { default as StreamOutNode } from './nodes/StreamOut';
 
