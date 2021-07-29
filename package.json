@@ -1,6 +1,6 @@
 {
   "name": "react-audio-mixer",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "A collection of audio and music hooks",
   "main": "lib/audio.js",
   "types": "lib/audio.d.ts",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/smujmaiku/react-audio-mixer#readme",
   "dependencies": {
-    "make-list-provider": "^0.2.1"
+    "make-list-provider": "^0.2.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.12.16",
