@@ -13,8 +13,8 @@ function App() {
 	return (
 		<AudioProvider>
 			<MicrophoneNode name="mic" echoCancellation noiseSuppression />
-			<GainNode name="gain" connect="mic" gain={0.5} />
-			<SpeakerNode name="speaker" connect="gain" />
+			<GainNode name="gain" listen="mic" gain={0.5} />
+			<SpeakerNode name="speaker" listen="gain" />
 		</AudioProvider>
 	);
 }
@@ -23,7 +23,7 @@ function App() {
 All nodes can be provided the following:
 
 * `name`: Unique name for the node
-* `connect?`: Name node(s) to take data from. Not available on input nodes
+* `listen?`: Name node(s) to take data from. Not available on input nodes
 * `onError?`: Error handler
 
 Some node attributes can take sequence values that correspond with [AudioParam][mdn-audioparam].
@@ -132,6 +132,27 @@ const [devices, ready] = useAudioOutputDevices();
 * `floatBuffer?`: Update with Float32Array
 * `onUpdate`: Update data handler
 
+### HzAnalyser Node
+
+* `limit?`: Volume limit
+* `padding?`: Gap padding
+* `fftSize?`: FFT size
+* `interval?`: Interval between updates
+* `min?`: Decibels minimum
+* `max?`: Decibels maximum
+* `onUpdate`: Update data handler
+
+### NoteAnalyser Node
+
+* `noteList?`: Note list
+* `limit?`: Volume limit
+* `padding?`: Gap padding
+* `fftSize?`: FFT size
+* `interval?`: Interval between updates
+* `min?`: Decibels minimum
+* `max?`: Decibels maximum
+* `onUpdate`: Update data handler
+
 ### Custom Node
 
 * `type`: node type
@@ -141,7 +162,7 @@ const [devices, ready] = useAudioOutputDevices();
 import useAudio, { CustomNode } from 'react-audio-mixer';
 
 function SomeNode(props) {
-	const { name, connect, onError } = props;
+	const { name, listen, onError } = props;
 	const { context, ready } = useAudio();
 
 	const node = useMemo(() => {
@@ -155,7 +176,7 @@ function SomeNode(props) {
 	return (
 		<CustomNode
 			name={name}
-			connect={connect}
+			listen={listen}
 			type="node"
 			node={node}
 			onError={onError}
@@ -170,7 +191,7 @@ function SomeNode(props) {
 
 ```jsx
 function PulseGain(props) {
-	const { name, connect, min = 0, max = 1, interval = 2000 } = props;
+	const { name, listen, min = 0, max = 1, interval = 2000 } = props;
 	const { context } = useAudio();
 
 	const [gainSequence, setGainSequence] = useState();
@@ -195,7 +216,7 @@ function PulseGain(props) {
 	return (
 		<GainNode
 			name={name}
-			connect={connect}
+			listen={listen}
 			gain={min}
 			gainSequence={gainSequence}
 		/>

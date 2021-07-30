@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import HzAnalyserNode, { AnalyserToneT, HzAnalyserProps, joinToneGroups } from './HzAnalyser';
+import HzAnalyserNode, { AnalyserToneT, HzAnalyserNodeProps, joinToneGroups } from './HzAnalyser';
 
 export const noteNames = ['C', 'C#,Db', 'D', 'D#,Eb', 'E', 'F', 'F#,Gb', 'G', 'G#,Ab', 'A', 'A#,Bb', 'B'];
 export const hz440 = [	// Standard 440 hz
@@ -62,7 +62,7 @@ export function combineByNotes(noteList: NoteList, tones: AnalyserToneT[]): Anal
 
 export type AnalyserNoteT = [note: string, volume: number, offset: number, jitter: number];
 
-export interface NoteAnalyserNodeProps extends Omit<HzAnalyserProps, 'onUpdate'> {
+export interface NoteAnalyserNodeProps extends Omit<HzAnalyserNodeProps, 'onUpdate'> {
 	noteList?: NoteList;
 	onUpdate: (notes: AnalyserNoteT[]) => void
 }
@@ -73,7 +73,7 @@ export default function NoteAnalyserNode(props: NoteAnalyserNodeProps): JSX.Elem
 	const {
 		noteList = noteListDefault,
 		onUpdate,
-		...hzAnalyserProps
+		...hzAnalyserNodeProps
 	} = props;
 
 	const handleUpdate = useCallback((hzList: AnalyserToneT[]) => {
@@ -90,6 +90,6 @@ export default function NoteAnalyserNode(props: NoteAnalyserNodeProps): JSX.Elem
 
 	return <HzAnalyserNode
 		onUpdate={handleUpdate}
-		{...hzAnalyserProps}
+		{...hzAnalyserNodeProps}
 	/>;
 }

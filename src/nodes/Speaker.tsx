@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
-import { useOutputDevices } from '../devices';
+import useAudio, { BaseOutNodeProps, CustomNode } from '../audioContext';
+import { useOutputDevices } from '../hooks/devices';
 
 declare global {
 	// Add setSinkId for chrome
@@ -11,15 +11,16 @@ declare global {
 
 const SETDEVICEID_ERROR_MSG = 'Cannot set deviceId as your browser does not support this feature';
 
-export interface SpeakerNodeProps {
-	name: string;
-	connect?: string[] | string;
+export interface SpeakerNodeProps extends BaseOutNodeProps {
 	deviceId?: string;
-	onError?: (error: Error) => void;
 }
 
 export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null {
-	const { name, connect, deviceId, onError } = props;
+	const {
+		deviceId,
+		onError,
+		...baseNodeProps
+	} = props;
 	const { context, ready } = useAudio();
 
 	const [devices] = useOutputDevices();
@@ -85,11 +86,10 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 
 	return (
 		<CustomNode
-			name={name}
-			connect={connect}
 			type="output"
 			node={node}
 			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

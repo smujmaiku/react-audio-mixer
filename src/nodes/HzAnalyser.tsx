@@ -50,19 +50,18 @@ export function reduceFfts(ffts: Uint8Array, padding = REDUCEFFTS_PADDING, limit
 	return groups.map(([fft, volume, jitter]) => ([fft, fft * volume, jitter]));
 }
 
-export interface HzAnalyserProps extends Omit<AnalyserNodePropsBase, 'type' | 'onUpdate'> {
+export interface HzAnalyserNodeProps extends Omit<AnalyserNodePropsBase, 'type' | 'onUpdate'> {
 	padding?: number;
 	limit?: number;
 	onUpdate: (list: AnalyserToneT[]) => void;
 }
 
-export default function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
+export default function HzAnalyserNode(props: HzAnalyserNodeProps): JSX.Element | null {
 	const {
 		fftSize = FFT_MAX,
 		padding = REDUCEFFTS_PADDING,
 		limit = 0,
 		onUpdate,
-		onError,
 		...analyserProps
 	} = props;
 	const { context } = useAudio();
@@ -80,7 +79,6 @@ export default function HzAnalyser(props: HzAnalyserProps): JSX.Element | null {
 		fftSize={fftSize}
 		type="frequency"
 		onUpdate={handleUpdate}
-		onError={onError}
 		{...analyserProps}
 	/>;
 }

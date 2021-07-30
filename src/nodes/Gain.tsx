@@ -1,22 +1,17 @@
 import React, { useMemo } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
-import useParam, { AudioParamSequence } from '../param';
+import useAudio, { BaseNodeProps, CustomNode } from '../audioContext';
+import useParam, { AudioParamSequence } from '../hooks/param';
 
-export interface GainNodeProps {
-	name: string;
-	connect?: string[] | string;
+export interface GainNodeProps extends BaseNodeProps {
 	gain: number;
 	gainSequence?: AudioParamSequence
-	onError?: (error: Error) => void;
 }
 
 export default function GainNode(props: GainNodeProps): JSX.Element | null {
 	const {
-		name,
-		connect,
 		gain,
 		gainSequence,
-		onError,
+		...baseNodeProps
 	} = props;
 	const { context } = useAudio();
 
@@ -33,11 +28,9 @@ export default function GainNode(props: GainNodeProps): JSX.Element | null {
 
 	return (
 		<CustomNode
-			name={name}
-			connect={connect}
 			type="node"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

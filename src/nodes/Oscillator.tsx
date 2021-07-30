@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
-import useParam, { AudioParamSequence } from '../param'
+import useAudio, { BaseInNodeProps, CustomNode } from '../audioContext';
+import useParam, { AudioParamSequence } from '../hooks/param'
 
-export interface OscillatorProps {
-	name: string;
+export interface OscillatorNodeProps extends BaseInNodeProps {
 	type?: OscillatorType;
 	frequency: number;
 	frequencySequence?: AudioParamSequence;
@@ -12,12 +11,10 @@ export interface OscillatorProps {
 	start?: number;
 	end?: number;
 	onEnded?: () => void;
-	onError?: (error: Error) => void;
 }
 
-export default function OscillatorNode(props: OscillatorProps): JSX.Element | null {
+export default function OscillatorNode(props: OscillatorNodeProps): JSX.Element | null {
 	const {
-		name,
 		type = 'sine',
 		frequency,
 		frequencySequence,
@@ -26,7 +23,7 @@ export default function OscillatorNode(props: OscillatorProps): JSX.Element | nu
 		start,
 		end,
 		onEnded,
-		onError
+		...baseNodeProps
 	} = props;
 	const { context, ready } = useAudio();
 
@@ -80,10 +77,9 @@ export default function OscillatorNode(props: OscillatorProps): JSX.Element | nu
 
 	return (
 		<CustomNode
-			name={name}
 			type="input"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

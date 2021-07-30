@@ -1,14 +1,15 @@
 import React, { useEffect, useMemo } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
+import useAudio, { BaseInNodeProps, CustomNode } from '../audioContext';
 
-export interface StreamInNodeProps {
-	name: string;
+export interface StreamInNodeProps extends BaseInNodeProps {
 	stream: MediaProvider;
-	onError?: (error: Error) => void;
 }
 
 export default function StreamInNode(props: StreamInNodeProps): JSX.Element | null {
-	const { name, stream, onError } = props;
+	const {
+		stream,
+		...baseNodeProps
+	} = props;
 	const { context, ready } = useAudio();
 
 	const audio = useMemo(() => new Audio(), []);
@@ -31,10 +32,9 @@ export default function StreamInNode(props: StreamInNodeProps): JSX.Element | nu
 
 	return (
 		<CustomNode
-			name={name}
 			type="input"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

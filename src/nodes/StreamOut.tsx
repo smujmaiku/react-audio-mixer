@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
+import useAudio, { BaseOutNodeProps, CustomNode } from '../audioContext';
 
-export interface StreamOutNodeProps {
-	name: string;
-	connect?: string[] | string;
+export interface StreamOutNodeProps extends BaseOutNodeProps {
 	stream: MediaStream;
-	onError?: (error: Error) => void;
 }
 
 export default function StreamOutNode(props: StreamOutNodeProps): JSX.Element | null {
-	const { name, connect, stream, onError } = props;
+	const {
+		stream,
+		...baseNodeProps
+	} = props;
 	const { context } = useAudio();
 
 	const node = useMemo(() => {
@@ -23,11 +23,9 @@ export default function StreamOutNode(props: StreamOutNodeProps): JSX.Element | 
 
 	return (
 		<CustomNode
-			name={name}
-			connect={connect}
 			type="output"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

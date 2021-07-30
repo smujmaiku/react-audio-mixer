@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
-import useAudio, { CustomNode, FFT_MIN } from '../audioContext';
+import useAudio, { BaseNodeProps, CustomNode, FFT_MIN } from '../audioContext';
 
-export interface AnalyserNodePropsBase {
-	name: string;
-	connect?: string[] | string;
+export interface AnalyserNodePropsBase extends BaseNodeProps {
 	type: 'frequency' | 'waveform';
 	fftSize?: number;
 	interval?: number;
 	smoothing?: number;
 	min?: number;
 	max?: number;
-	onError?: (error: Error) => void;
 }
 
 interface AnalyserNodePropsByByte extends AnalyserNodePropsBase {
@@ -22,12 +19,10 @@ interface AnalyserNodePropsByFloat extends AnalyserNodePropsBase {
 	floatBuffer: true;
 }
 
-type AnalyserNodeProps = AnalyserNodePropsByByte | AnalyserNodePropsByFloat;
+export type AnalyserNodeProps = AnalyserNodePropsByByte | AnalyserNodePropsByFloat;
 
 export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | null {
 	const {
-		name,
-		connect,
 		type,
 		fftSize = FFT_MIN,
 		interval = 500,
@@ -36,7 +31,7 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 		max = 0,
 		floatBuffer = false,
 		onUpdate,
-		onError,
+		...baseNodeProps
 	} = props;
 	const { context, ready } = useAudio();
 
@@ -93,11 +88,9 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 
 	return (
 		<CustomNode
-			name={name}
-			connect={connect}
 			type="output"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

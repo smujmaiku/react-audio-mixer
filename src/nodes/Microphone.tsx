@@ -1,23 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import useAudio, { CustomNode } from '../audioContext';
+import useAudio, { BaseInNodeProps, CustomNode } from '../audioContext';
 
-export interface MicrophoneNodeProps {
-	name: string;
+export interface MicrophoneNodeProps extends BaseInNodeProps {
 	deviceId?: string;
 	echoCancellation?: boolean;
 	noiseSuppression?: boolean;
 	autoGainControl?: boolean;
-	onError?: (error: Error) => void;
 }
 
 export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element | null {
 	const {
-		name,
 		deviceId,
 		echoCancellation,
 		noiseSuppression,
 		autoGainControl,
-		onError,
+		...baseNodeProps
 	} = props;
 	const { context } = useAudio();
 
@@ -57,10 +54,9 @@ export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element 
 
 	return (
 		<CustomNode
-			name={name}
 			type="input"
 			node={node}
-			onError={onError}
+			{...baseNodeProps}
 		/>
 	);
 }

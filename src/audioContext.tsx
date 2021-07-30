@@ -47,13 +47,13 @@ export function useAudioNode(name: string): NodeI {
 	return list.filter((node) => node.name === name)[0];
 }
 
-interface LinkNodeProps {
+interface ListenLinkProps {
 	linkId: string;
 	node: AudioNode;
 	onError?: (error: Error) => void;
 }
 
-function LinkNode(props: LinkNodeProps) {
+function ListenLink(props: ListenLinkProps) {
 	const { linkId, node, onError } = props;
 
 	const link = useAudioNode(linkId)?.node;
@@ -80,29 +80,35 @@ function LinkNode(props: LinkNodeProps) {
 	return null;
 }
 
-export interface CustomNodeProps {
+export interface BaseNodeProps {
 	name: string;
-	connect?: string[] | string;
-	type: NodeTypeT;
-	node: AudioNode;
+	listen?: string[] | string;
 	onError?: (error: Error) => void;
 }
 
+export type BaseInNodeProps = Omit<BaseNodeProps, 'listen'>;
+export type BaseOutNodeProps = BaseNodeProps;
+
+export interface CustomNodeProps extends BaseNodeProps {
+	type: NodeTypeT;
+	node: AudioNode;
+}
+
 export function CustomNode(props: CustomNodeProps): JSX.Element {
-	const { name, connect, type, node, onError } = props;
+	const { name, listen, type, node, onError } = props;
 
 	const state = useMemo(() => ({ name, type, node }), [name, type, node]);
 	useNode(state);
 
-	const links = useMemo(() => {
-		if (connect instanceof Array) return connect;
-		if (typeof connect === 'string') return [connect];
+	const listeners = useMemo(() => {
+		if (listen instanceof Array) return listen;
+		if (typeof listen === 'string') return [listen];
 		return [];
-	}, [connect]);
+	}, [listen]);
 
 	return <>
-		{links.map(linkId => (
-			<LinkNode
+		{listeners.map(linkId => (
+			<ListenLink
 				key={linkId}
 				linkId={linkId}
 				node={node}

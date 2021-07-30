@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import useAudio from './audioContext';
+import useAudio from '../audioContext';
 
 export type UseDevicesT = [MediaDeviceInfo[], boolean]
 

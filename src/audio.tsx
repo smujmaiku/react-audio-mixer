@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
-import useGestured from './gestured';
+import useGestured from './hooks/gestured';
 
 import useAudio, {
 	AudioProvider as Provider,
@@ -13,25 +13,25 @@ import useAudio, {
 } from './audioContext';
 
 export default useAudio;
-export { FFT_MIN, FFT_MID, FFT_MAX, CustomNode } from './audioContext';
+export { FFT_MIN, FFT_MID, FFT_MAX, BaseNodeProps, CustomNode } from './audioContext';
 
-export { default as MicrophoneNode } from './nodes/Microphone';
-export { default as StreamInNode } from './nodes/StreamIn';
-export { default as OscillatorNode } from './nodes/Oscillator';
-export { default as GainNode } from './nodes/Gain';
-export { default as AnalyserNode } from './nodes/Analyser';
-export { default as HzAnalyserNode } from './nodes/HzAnalyser';
-export { default as NoteAnalyserNode } from './nodes/NoteAnalyser';
-export { default as SpeakerNode } from './nodes/Speaker';
-export { default as StreamOutNode } from './nodes/StreamOut';
+export { default as MicrophoneNode, MicrophoneNodeProps } from './nodes/Microphone';
+export { default as StreamInNode, StreamInNodeProps } from './nodes/StreamIn';
+export { default as OscillatorNode, OscillatorNodeProps } from './nodes/Oscillator';
+export { default as GainNode, GainNodeProps } from './nodes/Gain';
+export { default as AnalyserNode, AnalyserNodeProps } from './nodes/Analyser';
+export { default as HzAnalyserNode, HzAnalyserNodeProps } from './nodes/HzAnalyser';
+export { default as NoteAnalyserNode, NoteAnalyserNodeProps } from './nodes/NoteAnalyser';
+export { default as SpeakerNode, SpeakerNodeProps } from './nodes/Speaker';
+export { default as StreamOutNode, StreamOutNodeProps } from './nodes/StreamOut';
 
 export {
 	default as useAudioDevices,
 	useInputDevices,
 	useOutputDevices,
-} from './devices';
-export { default as useGestured } from './gestured';
-export { default as useParam } from './param';
+} from './hooks/devices';
+export { default as useGestured } from './hooks/gestured';
+export { default as useParam } from './hooks/param';
 
 export interface AudioProviderProps {
 	children?: React.ReactNode;
