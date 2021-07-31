@@ -83,6 +83,7 @@ function ListenLink(props: ListenLinkProps) {
 export interface BaseNodeProps {
 	name: string;
 	listen?: string[] | string;
+	onNode?: (node: AudioNode) => void;
 	onError?: (error: Error) => void;
 }
 
@@ -95,10 +96,22 @@ export interface CustomNodeProps extends BaseNodeProps {
 }
 
 export function CustomNode(props: CustomNodeProps): JSX.Element {
-	const { name, listen, type, node, onError } = props;
+	const {
+		name,
+		listen,
+		type,
+		node,
+		onNode,
+		onError
+	} = props;
 
 	const state = useMemo(() => ({ name, type, node }), [name, type, node]);
 	useNode(state);
+
+	useEffect(() => {
+		if (!onNode) return;
+		onNode(node)
+	}, [node, onNode]);
 
 	const listeners = useMemo(() => {
 		if (listen instanceof Array) return listen;

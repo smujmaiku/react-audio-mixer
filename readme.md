@@ -24,6 +24,7 @@ All nodes can be provided the following:
 
 * `name`: Unique name for the node
 * `listen?`: Name node(s) to take data from. Not available on input nodes
+* `onNode?`: AudioNode callback
 * `onError?`: Error handler
 
 Some node attributes can take sequence values that correspond with [AudioParam][mdn-audioparam].
