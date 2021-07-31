@@ -1,6 +1,6 @@
 {
   "name": "react-audio-mixer",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A collection of audio and music hooks",
   "main": "lib/audio.js",
   "types": "lib/audio.d.ts",

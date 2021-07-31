@@ -6,8 +6,12 @@ export const FFT_MID = 8192;
 export const FFT_MAX = 32768;
 
 export type NodeTypeT = 'input' | 'node' | 'output';
+
+let nodeCount = 0;
+
 export interface NodeI {
-	name: string;
+	id: string;
+	name?: string;
 	node: AudioNode;
 	type: NodeTypeT;
 }
@@ -42,46 +46,70 @@ export function AudioProvider(props: AudioProviderProps): JSX.Element {
 	);
 }
 
-export function useAudioNode(name: string): NodeI {
-	const list = useNodes();
-	return list.filter((node) => node.name === name)[0];
-}
-
-interface ListenLinkProps {
-	linkId: string;
-	node: AudioNode;
+interface ConnectNodesProps {
+	source: AudioNode;
+	destination: AudioNode;
 	onError?: (error: Error) => void;
 }
 
-function ListenLink(props: ListenLinkProps) {
-	const { linkId, node, onError } = props;
+function ConnectNodes(props: ConnectNodesProps): null {
+	const { source, destination, onError } = props;
 
-	const link = useAudioNode(linkId)?.node;
-	const onErrorRef = useRef<(error: Error) => void>();
+	const onErrorRef = useRef<undefined | ((error: Error) => void)>();
 	onErrorRef.current = onError;
 
 	useEffect(() => {
-		if (!link || !node) return () => { return; };
+		if (!source || !destination) return;
 
-		try {
-			link.connect(node);
-		} catch (error) {
+		const handleError = (error: Error) => {
 			if (onErrorRef.current) {
 				onErrorRef.current(error);
 			}
 		}
 
-		return () => {
-			try {
-				link.disconnect(node);
-			} catch (e) { }
-		};
-	}, [link, node, onErrorRef]);
+		try {
+			source.connect(destination);
+
+			return () => {
+				try {
+					source.disconnect(destination);
+				} catch (error) {
+					handleError(error);
+				}
+			};
+		} catch (error) {
+			handleError(error);
+		}
+	}, [source, destination, onErrorRef]);
+
 	return null;
 }
 
+interface ListenLinkProps {
+	link: string;
+	node: AudioNode;
+	onError?: (error: Error) => void;
+}
+
+function ListenLink(props: ListenLinkProps): JSX.Element {
+	const { link, node, onError } = props;
+
+	const links = useNodes().filter((node) => node.name && node.name === link);
+
+	return <>
+		{links.map(link => (
+			<ConnectNodes
+				key={link.id}
+				source={link.node}
+				destination={node}
+				onError={onError}
+			/>
+		))}
+	</>;
+}
+
 export interface BaseNodeProps {
-	name: string;
+	name?: string;
 	listen?: string[] | string;
 	onNode?: (node: AudioNode) => void;
 	onError?: (error: Error) => void;
@@ -102,10 +130,11 @@ export function CustomNode(props: CustomNodeProps): JSX.Element {
 		type,
 		node,
 		onNode,
-		onError
+		onError,
 	} = props;
 
-	const state = useMemo(() => ({ name, type, node }), [name, type, node]);
+	const id: string = useMemo(() => (nodeCount++).toString(36), []);
+	const state: NodeI = useMemo(() => ({ name, type, node, id }), [name, type, node, id]);
 	useNode(state);
 
 	useEffect(() => {
@@ -120,10 +149,10 @@ export function CustomNode(props: CustomNodeProps): JSX.Element {
 	}, [listen]);
 
 	return <>
-		{listeners.map(linkId => (
+		{listeners.map(link => link && (
 			<ListenLink
-				key={linkId}
-				linkId={linkId}
+				key={link}
+				link={link}
 				node={node}
 				onError={onError}
 			/>

@@ -14,7 +14,7 @@ function App() {
 		<AudioProvider>
 			<MicrophoneNode name="mic" echoCancellation noiseSuppression />
 			<GainNode name="gain" listen="mic" gain={0.5} />
-			<SpeakerNode name="speaker" listen="gain" />
+			<SpeakerNode listen="gain" />
 		</AudioProvider>
 	);
 }
@@ -22,7 +22,7 @@ function App() {
 
 All nodes can be provided the following:
 
-* `name`: Unique name for the node
+* `name?`: Name of the node or group of nodes
 * `listen?`: Name node(s) to take data from. Not available on input nodes
 * `onNode?`: AudioNode callback
 * `onError?`: Error handler
