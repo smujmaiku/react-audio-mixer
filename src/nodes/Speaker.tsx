@@ -3,13 +3,16 @@ import useAudio, { BaseOutNodeProps, CustomNode } from '../audioContext';
 import { useOutputDevices } from '../hooks/devices';
 
 declare global {
-	// Add setSinkId for chrome
-	interface HTMLAudioElement {
-		setSinkId?: (id: string) => Promise<void>;
+	// Add sinkId for Chrome
+	interface HTMLMediaElement {
+		sinkId: string;
+		setSinkId: (id: string) => Promise<void>;
 	}
 }
 
 const SETDEVICEID_ERROR_MSG = 'Cannot set deviceId as your browser does not support this feature';
+
+export const canSinkId = ('sinkId' in HTMLMediaElement.prototype);
 
 export interface SpeakerNodeProps extends BaseOutNodeProps {
 	deviceId?: string;
@@ -52,7 +55,7 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 		audio.muted = true;
 
 		const setBySinkId = async () => {
-			if (!audio.setSinkId) return;
+			if (!canSinkId) return;
 
 			try {
 				await audio.setSinkId('');
@@ -69,7 +72,7 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 			audio.muted = false;
 		}
 
-		if (audio.setSinkId) {
+		if (canSinkId) {
 			setBySinkId();
 		} else if (deviceId) {
 			onError?.(new Error(SETDEVICEID_ERROR_MSG))
