@@ -88,6 +88,14 @@ Requests and gathers available output audio media devices.
 const [devices, ready] = useAudioOutputDevices();
 ```
 
+### Group Node
+
+Scopes children in a new group
+
+* `children?`: Audio Nodes
+* `inputName?` (default: `input`): input node name
+* `outputName?` (default: `output`): putput node name
+
 ### Microphone Node
 
 * `deviceId?`: Media device id
@@ -117,6 +125,10 @@ const [devices, ready] = useAudioOutputDevices();
 ### StreamOut Node
 
 * `stream`: MediaStream
+
+### Null Node
+
+A node just for pivoting on.
 
 ### Gain Node
 

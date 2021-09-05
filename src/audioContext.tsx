@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import makeListProvider from 'make-list-provider';
+import useNodeLink from './hooks/nodeLink'
 
 export const FFT_MIN = 32;
 export const FFT_MID = 8192;
@@ -55,32 +56,7 @@ interface ConnectNodesProps {
 function ConnectNodes(props: ConnectNodesProps): null {
 	const { source, destination, onError } = props;
 
-	const onErrorRef = useRef<undefined | ((error: Error) => void)>();
-	onErrorRef.current = onError;
-
-	useEffect(() => {
-		if (!source || !destination) return;
-
-		const handleError = (error: Error) => {
-			if (onErrorRef.current) {
-				onErrorRef.current(error);
-			}
-		}
-
-		try {
-			source.connect(destination);
-
-			return () => {
-				try {
-					source.disconnect(destination);
-				} catch (error) {
-					handleError(error);
-				}
-			};
-		} catch (error) {
-			handleError(error);
-		}
-	}, [source, destination, onErrorRef]);
+	useNodeLink(source, destination, onError);
 
 	return null;
 }
