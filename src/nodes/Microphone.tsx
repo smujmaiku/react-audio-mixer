@@ -8,6 +8,11 @@ export interface MicrophoneNodeProps extends BaseInNodeProps {
 	autoGainControl?: boolean;
 }
 
+function parseDeviceId(deviceId: string | undefined): ConstrainDOMString {
+	if (!deviceId || deviceId === 'default') return '';
+	return { exact: deviceId };
+}
+
 export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element | null {
 	const {
 		deviceId,
@@ -25,12 +30,13 @@ export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element 
 		(async () => {
 			const value = await navigator.mediaDevices.getUserMedia({
 				audio: {
-					deviceId: !deviceId || deviceId === 'default' ? deviceId : { exact: deviceId },
+					deviceId: parseDeviceId(deviceId),
 					echoCancellation,
 					noiseSuppression,
 					autoGainControl,
 				},
 			});
+
 			if (cancel) return;
 			setDevice(value);
 		})().catch(() => {
