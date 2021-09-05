@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import makeListProvider from 'make-list-provider';
 import useNodeLink from './hooks/nodeLink'
+import { ErrorCallback } from './hooks/errorCallback';
 
 export const FFT_MIN = 32;
 export const FFT_MID = 8192;
@@ -50,7 +51,7 @@ export function AudioProvider(props: AudioProviderProps): JSX.Element {
 interface ConnectNodesProps {
 	source: AudioNode;
 	destination: AudioNode;
-	onError?: (error: Error) => void;
+	onError?: ErrorCallback;
 }
 
 function ConnectNodes(props: ConnectNodesProps): null {
@@ -64,7 +65,7 @@ function ConnectNodes(props: ConnectNodesProps): null {
 interface ListenLinkProps {
 	link: string;
 	node: AudioNode;
-	onError?: (error: Error) => void;
+	onError?: ErrorCallback;
 }
 
 function ListenLink(props: ListenLinkProps): JSX.Element {
@@ -88,7 +89,7 @@ export interface BaseNodeProps {
 	name?: string;
 	listen?: string[] | string;
 	onNode?: (node: AudioNode) => void;
-	onError?: (error: Error) => void;
+	onError?: ErrorCallback;
 }
 
 export type BaseInNodeProps = Omit<BaseNodeProps, 'listen'>;

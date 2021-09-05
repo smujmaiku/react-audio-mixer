@@ -30,3 +30,4 @@ export {
 export { default as useGestured } from './hooks/gestured';
 export { default as useParam } from './hooks/param';
 export { default as useNodeLink } from './hooks/nodeLink';
+export { ErrorCallback } from './hooks/errorCallback'
