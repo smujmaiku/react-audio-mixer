@@ -27,6 +27,7 @@ export {
 	useInputDevices,
 	useOutputDevices,
 } from './hooks/devices';
+export { default as useStream } from './hooks/stream';
 export { default as useGestured } from './hooks/gestured';
 export { default as useParam } from './hooks/param';
 export { default as useNodeLink } from './hooks/nodeLink';

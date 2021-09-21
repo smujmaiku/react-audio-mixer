@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import useAudio, { BaseInNodeProps, CustomNode } from '../audioContext';
+import useStream from '../hooks/stream';
 
 export interface MicrophoneNodeProps extends BaseInNodeProps {
 	deviceId?: string;
 	echoCancellation?: boolean;
 	noiseSuppression?: boolean;
 	autoGainControl?: boolean;
+	onStream?: (stream: MediaStream | undefined) => void;
 }
 
 function parseDeviceId(deviceId: string | undefined): ConstrainDOMString {
@@ -19,42 +21,33 @@ export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element 
 		echoCancellation,
 		noiseSuppression,
 		autoGainControl,
+		onStream,
 		...baseNodeProps
 	} = props;
 	const { context } = useAudio();
 
-	const [device, setDevice] = useState<MediaStream | undefined>();
+	const constraints = useMemo<MediaStreamConstraints>(() => ({
+		audio: {
+			deviceId: parseDeviceId(deviceId),
+			echoCancellation,
+			noiseSuppression,
+			autoGainControl,
+		}
+	}), [deviceId, echoCancellation, noiseSuppression, autoGainControl])
+
+	const stream = useStream(constraints);
+
 	useEffect(() => {
-		let cancel = false;
-
-		(async () => {
-			const value = await navigator.mediaDevices.getUserMedia({
-				audio: {
-					deviceId: parseDeviceId(deviceId),
-					echoCancellation,
-					noiseSuppression,
-					autoGainControl,
-				},
-			});
-
-			if (cancel) return;
-			setDevice(value);
-		})().catch(() => {
-			if (cancel) return;
-			setDevice(undefined);
-		});
-
-		return () => {
-			cancel = true;
-		};
-	}, [deviceId, echoCancellation, noiseSuppression, autoGainControl]);
+		if (!onStream) return;
+		onStream(stream);
+	}, [stream, onStream]);
 
 	const node = useMemo(() => {
-		if (!device) return;
+		if (!stream) return;
 		try {
-			return context.createMediaStreamSource(device);
+			return context.createMediaStreamSource(stream);
 		} catch (e) { }
-	}, [context, device]);
+	}, [context, stream]);
 
 	if (!node) return null;
 
