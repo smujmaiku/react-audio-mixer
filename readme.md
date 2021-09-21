@@ -12,9 +12,19 @@ Use `react-audio-mixer` to make music in your React apps!
 function App() {
 	return (
 		<AudioProvider>
-			<MicrophoneNode name="mic" echoCancellation noiseSuppression />
-			<GainNode name="gain" listen="mic" gain={0.5} />
-			<SpeakerNode listen="gain" />
+			<MicrophoneNode
+				name="mic"
+				echoCancellation
+				noiseSuppression
+			/>
+			<GainNode
+				name="gain"
+				listen="mic"
+				gain={0.5}
+			/>
+			<SpeakerNode
+				listen="gain"
+			/>
 		</AudioProvider>
 	);
 }
@@ -88,6 +98,15 @@ Requests and gathers available output audio media devices.
 const [devices, ready] = useAudioOutputDevices();
 ```
 
+### useStream
+
+Requests a stream via MediaStreamConstraints
+
+```jsx
+const constraints = useMemo(() => ({ audio: true, video: false }))
+const stream = useStream(constraints);
+```
+
 ### Group Node
 
 Scopes children in a new group
@@ -102,6 +121,7 @@ Scopes children in a new group
 * `echoCancellation?`: Echo cancellation
 * `noiseSuppression?`: Noise suppression
 * `autoGainControl?`: Auto gain control
+* `onStream?`: MediaStream handler
 
 ### StreamIn Node
 
@@ -275,6 +295,5 @@ function RandomBeeps(props) {
 ## License
 
 Copyright (c) 2021, Michael Szmadzinski. (MIT License)
-
 
 [mdn-audio-param]: https://developer.mozilla.org/en-US/docs/Web/API/AudioParam
