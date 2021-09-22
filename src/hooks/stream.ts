@@ -12,22 +12,26 @@ async function getStreamClean(constraints?: MediaStreamConstraints | undefined):
 export default function useStream(constraints?: MediaStreamConstraints | undefined): MediaStream | undefined {
 	const { ready } = useAudio();
 
-	const [stream, setStream] = useState<MediaStream | undefined>();
+	const [state, setState] = useState<MediaStream | undefined>();
 
 	useEffect(() => {
-		setStream(undefined);
+		setState(undefined);
 
 		if (!ready) return;
 
 		let cancel = false;
-		let value: MediaStream | undefined;
+		let stream: MediaStream | undefined;
 
 		const update = async () => {
-			if (value?.active) return;
-			value = await getStreamClean(constraints);
+			if (stream?.active) return;
 
-			if (cancel) return;
-			setStream(value);
+			const res = await getStreamClean(constraints);
+
+			// Prevent rapid events setting state
+			if (cancel || stream?.active) return;
+
+			stream = res;
+			setState(stream);
 		}
 
 		update();
@@ -39,5 +43,5 @@ export default function useStream(constraints?: MediaStreamConstraints | undefin
 		};
 	}, [ready, constraints]);
 
-	return stream;
+	return state;
 }
