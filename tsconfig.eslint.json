@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"exclude": [
+		"node_modules",
+		"coverage",
+		"lib",
+		// Lint tests but dont compile them
+	]
+}
