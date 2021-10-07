@@ -7,7 +7,7 @@
 import useAudio from './audioContext';
 
 export default useAudio;
-export { FFT_MIN, FFT_MID, FFT_MAX, BaseNodeProps, CustomNode } from './audioContext';
+export { FFT_MIN, FFT_MID, FFT_MAX, BaseNodeProps, BaseInNodeProps, BaseOutNodeProps, CustomNode } from './audioContext';
 export { default as AudioProvider, AudioProviderProps } from './audioProvider';
 
 export { default as GroupNode, GroupNodeProps } from './nodes/Group';

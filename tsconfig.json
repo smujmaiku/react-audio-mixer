@@ -20,6 +20,7 @@
     "node_modules",
     "coverage",
     "lib",
+    "src/flow",
     "**/*.stories.*",
     "**/*.test.*"
   ]
