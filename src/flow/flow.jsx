@@ -21,12 +21,30 @@ function getPositionOpts(type) {
 	}
 }
 
+function getNode(nodes, name) {
+	return nodes.filter(n => n.name === name)[0];
+}
+
+function patchNode(nodes, node) {
+	const { name } = node;
+	const current = getNode(nodes, name);
+	if(!current) return nodes;
+
+	return [
+		...nodes.filter(n => n.name !== name),
+		{
+			...current,
+			...node,
+		},
+	];
+}
+
 function getLinks(name, listen) {
-	if(typeof listen === 'string') {
+	if (typeof listen === 'string') {
 		return getLinks(name, [listen]);
 	}
 
-	if(listen instanceof Array) {
+	if (listen instanceof Array) {
 		return listen.map(source => ({
 			id: `e-${source}-${name}`,
 			source,
@@ -39,8 +57,16 @@ function getLinks(name, listen) {
 	return [];
 }
 
-function FlowElement() {
-	return 'ELEMENT!'
+function FlowElement(node) {
+	switch(node.type) {
+	case 'microphone':
+		return 'mic';
+	case 'gain':
+		return 'gain';
+	case 'speaker':
+		return 'speaker';
+	}
+	return `unknown element(${node.type})`;
 }
 
 function useFlowElements(state) {
@@ -67,22 +93,29 @@ export default function Flow(){
 	
 	const elements = useFlowElements(state);
 
+	const handleNodeDrag = useCallback((_, event) => {
+		const {id, position} = event;
+		setState((current) => {
+			return patchNode(current, {
+				name: id,
+				position,
+			});
+		});
+	}, [])
+
 	const handleConnect = useCallback((event) => {
 		const { source, target } = event;
-		if(source === target) return;
+		if (source === target) return;
 
 		setState((current) => {
-			const row = current.filter(r => r.name === target)[0];
-			if(!row) return current;
+			const row = getNode(current, target);
+			if (!row) return current;
 			const exists = row.listen?.some(v => v === source);
-			if(exists) return current;
-			return [
-				...current.filter(r => r.name !== target),
-				{
-					...row,
-					listen: [...row.listen || [], source],
-				},
-			];
+			if (exists) return current;
+			return patchNode(current, {
+				name: target,
+				listen: [...row.listen || [], source],
+			});
 		});
 	})
 
@@ -91,7 +124,7 @@ export default function Flow(){
 		nodesConnectable
 		nodesDraggable
 		// onLoad={handleLoad}
-		// onNodeDragStop={handleNodeDrag}
+		onNodeDragStop={handleNodeDrag}
 		onConnect={handleConnect}
 		snapToGrid
 		snapGrid={[20, 20]}
