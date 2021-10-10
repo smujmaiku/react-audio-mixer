@@ -3,6 +3,9 @@ import useAudio, { BaseNodeProps, CustomNode } from '../audioContext';
 import useParam, { AudioParamSequence } from '../hooks/param';
 
 export interface GainNodeProps extends BaseNodeProps {
+	/**
+	 * Volume value
+	 */
 	gain: number;
 	gainSequence?: AudioParamSequence
 }

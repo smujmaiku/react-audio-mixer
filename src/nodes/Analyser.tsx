@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import useAudio, { BaseNodeProps, CustomNode, FFT_MIN } from '../audioContext';
+import useErrorCallback from '../hooks/errorCallback';
 
 export interface AnalyserNodePropsBase extends BaseNodeProps {
 	type: 'frequency' | 'waveform';
@@ -35,6 +36,8 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 	} = props;
 	const { context, ready } = useAudio();
 
+	const handleError = useErrorCallback(baseNodeProps.onError);
+
 	const node = useMemo(() => {
 		try {
 			return context.createAnalyser();
@@ -54,7 +57,12 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 
 	useEffect(() => {
 		if (!node || !ready) return;
-		node.fftSize = fftSize;
+		try {
+			node.fftSize = fftSize;
+		} catch (error) {
+			handleError(error);
+			return;
+		}
 
 		const buffer = floatBuffer ?
 			new Float32Array(node.frequencyBinCount) :
@@ -82,7 +90,7 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 		return () => {
 			clearInterval(timer);
 		};
-	}, [node, ready, type, floatBuffer, interval, fftSize, onUpdate]);
+	}, [node, ready, type, floatBuffer, interval, fftSize, onUpdate, handleError]);
 
 	if (!node) return null;
 
