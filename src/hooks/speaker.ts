@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import useAudio from '../audioContext';
 import { useOutputDevices } from './devices';
 import useErrorCallback, { ErrorCallback } from './errorCallback'
@@ -15,7 +15,22 @@ const SETDEVICEID_ERROR_MSG = 'Cannot set deviceId as your browser does not supp
 
 export const canSinkId = ('sinkId' in HTMLMediaElement.prototype);
 
-export default function useSpeaker(deviceId?: string, onError?: ErrorCallback): HTMLAudioElement {
+export interface UseSpeakerOptions {
+	deviceId?: string;
+	onError?: ErrorCallback;
+}
+
+export default function useSpeaker(deviceId?: string): HTMLAudioElement;
+export default function useSpeaker(options: UseSpeakerOptions): HTMLAudioElement;
+export default function useSpeaker(options?: string | UseSpeakerOptions): HTMLAudioElement {
+	let opts: UseSpeakerOptions = {};
+	if (typeof options === 'string') {
+		opts.deviceId = options;
+	} else if (options) {
+		opts = options;
+	}
+	const { deviceId, onError } = opts;
+
 	const { ready } = useAudio();
 
 	const handleError = useErrorCallback(onError);
@@ -26,9 +41,9 @@ export default function useSpeaker(deviceId?: string, onError?: ErrorCallback): 
 	const audio = useMemo(() => {
 		const audio = new Audio();
 		audio.muted = true;
+		audio.autoplay = isDeviceKnown;
 		return audio;
 		// Reload audio element when device is recovered
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isDeviceKnown]);
 
 	useEffect(() => () => {
@@ -36,11 +51,6 @@ export default function useSpeaker(deviceId?: string, onError?: ErrorCallback): 
 		audio.srcObject = null;
 		audio.pause();
 	}, [audio]);
-
-	useEffect(() => {
-		if (!ready) return;
-		audio.play();
-	}, [audio, ready]);
 
 	useEffect(() => {
 		if (!audio || !ready) return;

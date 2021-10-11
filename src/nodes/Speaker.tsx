@@ -17,7 +17,7 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 
 	const handleError = useErrorCallback(onError);
 
-	const audio = useSpeaker(deviceId, onError);
+	const audio = useSpeaker({ deviceId, onError });
 
 	const node = useMemo(() => {
 		try {
