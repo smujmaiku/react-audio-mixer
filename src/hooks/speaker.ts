@@ -41,10 +41,10 @@ export default function useSpeaker(options?: string | UseSpeakerOptions): HTMLAu
 	const audio = useMemo(() => {
 		const audio = new Audio();
 		audio.muted = true;
-		audio.autoplay = isDeviceKnown;
+		audio.autoplay = ready && isDeviceKnown;
 		return audio;
 		// Reload audio element when device is recovered
-	}, [isDeviceKnown]);
+	}, [ready, isDeviceKnown]);
 
 	useEffect(() => () => {
 		audio.muted = true;
