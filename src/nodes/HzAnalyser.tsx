@@ -4,22 +4,29 @@ import AnalyserNode, { AnalyserNodePropsBase } from './Analyser';
 
 export type AnalyserToneT = [value: number, volume: number, jitter: number];
 
-const REDUCEFFTS_PADDING = 0.04;	// About half a semitone
+const REDUCEFFTS_PADDING = 0.04; // About half a semitone
 
 export function joinToneGroups(list: AnalyserToneT[]): AnalyserToneT {
-	return list.reduce((a, b) => {
-		const [atone, avolume, ajitter] = a;
-		const [btone, bvolume, bjitter] = b;
-		const sum = avolume + bvolume;
-		return [
-			sum ? (atone * avolume + btone * bvolume) / sum : 0,
-			sum,
-			ajitter + bjitter,
-		];
-	}, [0, 0, 0] as AnalyserToneT)
+	return list.reduce(
+		(a, b) => {
+			const [atone, avolume, ajitter] = a;
+			const [btone, bvolume, bjitter] = b;
+			const sum = avolume + bvolume;
+			return [
+				sum ? (atone * avolume + btone * bvolume) / sum : 0,
+				sum,
+				ajitter + bjitter,
+			];
+		},
+		[0, 0, 0] as AnalyserToneT
+	);
 }
 
-export function reduceFfts(ffts: Uint8Array, padding = REDUCEFFTS_PADDING, limit = 0): AnalyserToneT[] {
+export function reduceFfts(
+	ffts: Uint8Array,
+	padding = REDUCEFFTS_PADDING,
+	limit = 0
+): AnalyserToneT[] {
 	const groups: AnalyserToneT[] = [];
 	let lastFft = 0;
 	let newGroup = true;
@@ -38,25 +45,27 @@ export function reduceFfts(ffts: Uint8Array, padding = REDUCEFFTS_PADDING, limit
 		}
 
 		const weightedVolume = volume / (fft + 1);
-		groups.push(joinToneGroups([
-			groups.pop() || [0, 0, 0],
-			[fft, weightedVolume, 1],
-		]))
+		groups.push(
+			joinToneGroups([groups.pop() || [0, 0, 0], [fft, weightedVolume, 1]])
+		);
 
 		lastFft = fft;
 		newGroup = false;
 	}
 
-	return groups.map(([fft, volume, jitter]) => ([fft, fft * volume, jitter]));
+	return groups.map(([fft, volume, jitter]) => [fft, fft * volume, jitter]);
 }
 
-export interface HzAnalyserNodeProps extends Omit<AnalyserNodePropsBase, 'type' | 'onUpdate'> {
+export interface HzAnalyserNodeProps
+	extends Omit<AnalyserNodePropsBase, 'type' | 'onUpdate'> {
 	padding?: number;
 	limit?: number;
 	onUpdate: (list: AnalyserToneT[]) => void;
 }
 
-export default function HzAnalyserNode(props: HzAnalyserNodeProps): JSX.Element | null {
+export default function HzAnalyserNode(
+	props: HzAnalyserNodeProps
+): JSX.Element | null {
 	const {
 		fftSize = FFT_MAX,
 		padding = REDUCEFFTS_PADDING,
@@ -66,19 +75,26 @@ export default function HzAnalyserNode(props: HzAnalyserNodeProps): JSX.Element 
 	} = props;
 	const { context } = useAudio();
 
-	const handleUpdate = useCallback((buffer) => {
-		const { sampleRate } = context;
-		const mag = sampleRate / fftSize;
+	const handleUpdate = useCallback(
+		(buffer) => {
+			const { sampleRate } = context;
+			const mag = sampleRate / fftSize;
 
-		const fftGroups = reduceFfts(buffer, padding, limit);
-		const hzs = fftGroups.map(([fft, volume, jitter]) => ([fft * mag, volume, jitter] as AnalyserToneT));
-		onUpdate(hzs as AnalyserToneT[]);
-	}, [context, fftSize, limit, padding, onUpdate]);
+			const fftGroups = reduceFfts(buffer, padding, limit);
+			const hzs = fftGroups.map(
+				([fft, volume, jitter]) => [fft * mag, volume, jitter] as AnalyserToneT
+			);
+			onUpdate(hzs as AnalyserToneT[]);
+		},
+		[context, fftSize, limit, padding, onUpdate]
+	);
 
-	return <AnalyserNode
-		fftSize={fftSize}
-		type="frequency"
-		onUpdate={handleUpdate}
-		{...analyserProps}
-	/>;
+	return (
+		<AnalyserNode
+			fftSize={fftSize}
+			type="frequency"
+			onUpdate={handleUpdate}
+			{...analyserProps}
+		/>
+	);
 }

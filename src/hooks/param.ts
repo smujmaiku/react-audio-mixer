@@ -1,15 +1,45 @@
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
-export type AudioParamSetValue = [type: 'setValue', value: number, startTime: number];
-export type AudioParamLinearRamp = [type: 'linearRamp', value: number, endTime: number];
-export type AudioParamExponentialRamp = [type: 'exponentialRamp', value: number, endTime: number];
-export type AudioParamSetTarget = [type: 'setTarget', target: number, startTime: number, timeConstant: number];
-export type AudioParamSetValueCurve = [type: 'setValueCurve', values: number[] | Float32Array, startTime: number, duration: number];
+export type AudioParamSetValue = [
+	type: 'setValue',
+	value: number,
+	startTime: number
+];
+export type AudioParamLinearRamp = [
+	type: 'linearRamp',
+	value: number,
+	endTime: number
+];
+export type AudioParamExponentialRamp = [
+	type: 'exponentialRamp',
+	value: number,
+	endTime: number
+];
+export type AudioParamSetTarget = [
+	type: 'setTarget',
+	target: number,
+	startTime: number,
+	timeConstant: number
+];
+export type AudioParamSetValueCurve = [
+	type: 'setValueCurve',
+	values: number[] | Float32Array,
+	startTime: number,
+	duration: number
+];
 
-export type AudioParamT = AudioParamSetValue | AudioParamLinearRamp | AudioParamExponentialRamp | AudioParamSetTarget | AudioParamSetValueCurve;
+export type AudioParamT =
+	| AudioParamSetValue
+	| AudioParamLinearRamp
+	| AudioParamExponentialRamp
+	| AudioParamSetTarget
+	| AudioParamSetValueCurve;
 export type AudioParamSequence = AudioParamT[];
 
-export function scheduleValues(param: AudioParam, sequence: AudioParamSequence): void {
+export function scheduleValues(
+	param: AudioParam,
+	sequence: AudioParamSequence
+): void {
 	for (const command of sequence) {
 		switch (command[0]) {
 			case 'setValue':
@@ -32,9 +62,14 @@ export function scheduleValues(param: AudioParam, sequence: AudioParamSequence):
 	}
 }
 
-export default function useParam(param: AudioParam | undefined, value: number, sequence?: AudioParamSequence): void {
+export default function useParam(
+	param: AudioParam | undefined,
+	value: number,
+	sequence?: AudioParamSequence
+): void {
 	useEffect(() => {
-		if (!param) return;
+		if (!param) return undefined!;
+		// eslint-disable-next-line no-param-reassign
 		param.value = value;
 
 		if (sequence) {
@@ -43,6 +78,6 @@ export default function useParam(param: AudioParam | undefined, value: number, s
 
 		return () => {
 			param.cancelScheduledValues(0);
-		}
-	}, [param, value, sequence])
+		};
+	}, [param, value, sequence]);
 }

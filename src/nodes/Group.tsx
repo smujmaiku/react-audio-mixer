@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import useAudio, { BaseNodeProps } from '../audioContext';
 import AudioProvider from '../audioProvider';
 import NullNode from './Null';
-import useErrorCallback from '../hooks/errorCallback'
-import useNodeLink from '../hooks/nodeLink'
+import useErrorCallback from '../hooks/errorCallback';
+import useNodeLink from '../hooks/nodeLink';
 
 export interface GroupNodeProps extends BaseNodeProps {
 	children?: React.ReactNode;
@@ -40,14 +40,8 @@ export default function GroupNode(props: GroupNodeProps): JSX.Element {
 
 	return (
 		<>
-			<NullNode
-				listen={listen}
-				onNode={setOuterInput}
-				onError={handleError}
-			/>
-			<AudioProvider
-				context={context}
-			>
+			<NullNode listen={listen} onNode={setOuterInput} onError={handleError} />
+			<AudioProvider context={context}>
 				<NullNode
 					name={inputName}
 					onNode={setInnerInput}
@@ -60,11 +54,7 @@ export default function GroupNode(props: GroupNodeProps): JSX.Element {
 				/>
 				{children}
 			</AudioProvider>
-			<NullNode
-				{...baseProps}
-				onNode={setOuterOutput}
-				onError={handleError}
-			/>
+			<NullNode {...baseProps} onNode={setOuterOutput} onError={handleError} />
 		</>
 	);
 }

@@ -15,7 +15,9 @@ function parseDeviceId(deviceId: string | undefined): ConstrainDOMString {
 	return { exact: deviceId };
 }
 
-export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element | null {
+export default function MicrophoneNode(
+	props: MicrophoneNodeProps
+): JSX.Element | null {
 	const {
 		deviceId,
 		echoCancellation,
@@ -26,14 +28,17 @@ export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element 
 	} = props;
 	const { context } = useAudio();
 
-	const constraints = useMemo<MediaStreamConstraints>(() => ({
-		audio: {
-			deviceId: parseDeviceId(deviceId),
-			echoCancellation,
-			noiseSuppression,
-			autoGainControl,
-		}
-	}), [deviceId, echoCancellation, noiseSuppression, autoGainControl])
+	const constraints = useMemo<MediaStreamConstraints>(
+		() => ({
+			audio: {
+				deviceId: parseDeviceId(deviceId),
+				echoCancellation,
+				noiseSuppression,
+				autoGainControl,
+			},
+		}),
+		[deviceId, echoCancellation, noiseSuppression, autoGainControl]
+	);
 
 	const stream = useStream(constraints);
 
@@ -43,19 +48,15 @@ export default function MicrophoneNode(props: MicrophoneNodeProps): JSX.Element 
 	}, [stream, onStream]);
 
 	const node = useMemo(() => {
-		if (!stream) return;
+		if (!stream) return undefined;
 		try {
 			return context.createMediaStreamSource(stream);
-		} catch (e) { }
+		} catch (e) {
+			return undefined;
+		}
 	}, [context, stream]);
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="input"
-			node={node}
-			{...baseNodeProps}
-		/>
-	);
+	return <CustomNode type="input" node={node} {...baseNodeProps} />;
 }

@@ -1,15 +1,15 @@
-import { useEffect } from "react";
-import useErrorCallback, { ErrorCallback } from "./errorCallback";
+import { useEffect } from 'react';
+import useErrorCallback, { ErrorCallback } from './errorCallback';
 
 export default function useNodeLink(
 	source: AudioNode | undefined,
 	destination: AudioNode | undefined,
-	onError?: ErrorCallback,
+	onError?: ErrorCallback
 ): void {
 	const handleError = useErrorCallback(onError);
 
 	useEffect(() => {
-		if (!source || !destination) return;
+		if (!source || !destination) return undefined!;
 
 		try {
 			source.connect(destination);
@@ -24,5 +24,7 @@ export default function useNodeLink(
 		} catch (error) {
 			handleError(error);
 		}
+
+		return undefined!;
 	}, [source, destination, handleError]);
 }

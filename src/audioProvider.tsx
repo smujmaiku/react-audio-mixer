@@ -1,11 +1,7 @@
-
 import React, { useEffect, useMemo } from 'react';
 import useGestured from './hooks/gestured';
 
-import {
-	AudioProvider as Provider,
-	AudioContextI
-} from './audioContext';
+import { AudioProvider as Provider, AudioContextI } from './audioContext';
 
 interface AudioProviderPropsBase {
 	children?: React.ReactNode;
@@ -14,16 +10,20 @@ interface AudioProviderPropsBase {
 	sampleRate?: void;
 }
 
-interface AudioProviderPropsWithContext extends Omit<AudioProviderPropsBase, 'context'> {
+interface AudioProviderPropsWithContext
+	extends Omit<AudioProviderPropsBase, 'context'> {
 	context: AudioContext;
 }
 
-interface AudioProviderPropsWithHints extends Omit<AudioProviderPropsBase, 'latencyHint' | 'sampleRate'> {
+interface AudioProviderPropsWithHints
+	extends Omit<AudioProviderPropsBase, 'latencyHint' | 'sampleRate'> {
 	latencyHint?: number;
 	sampleRate?: number;
 }
 
-export type AudioProviderProps = AudioProviderPropsWithContext | AudioProviderPropsWithHints;
+export type AudioProviderProps =
+	| AudioProviderPropsWithContext
+	| AudioProviderPropsWithHints;
 
 export default function AudioProvider(props: AudioProviderProps): JSX.Element {
 	const {
@@ -44,14 +44,13 @@ export default function AudioProvider(props: AudioProviderProps): JSX.Element {
 		context.resume();
 	}, [context, ready]);
 
-	const value: AudioContextI = useMemo(() => ({
-		context,
-		ready,
-	}), [context, ready]);
-
-	return (
-		<Provider value={value}>
-			{children}
-		</Provider>
+	const value: AudioContextI = useMemo(
+		() => ({
+			context,
+			ready,
+		}),
+		[context, ready]
 	);
+
+	return <Provider value={value}>{children}</Provider>;
 }

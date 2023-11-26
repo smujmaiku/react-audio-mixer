@@ -5,20 +5,20 @@ export interface StreamInNodeProps extends BaseInNodeProps {
 	stream: MediaProvider;
 }
 
-export default function StreamInNode(props: StreamInNodeProps): JSX.Element | null {
-	const {
-		stream,
-		...baseNodeProps
-	} = props;
+export default function StreamInNode(
+	props: StreamInNodeProps
+): JSX.Element | null {
+	const { stream, ...baseNodeProps } = props;
 	const { context, ready } = useAudio();
 
 	const audio = useMemo(() => new Audio(), []);
 
 	const node = useMemo(() => {
 		try {
-			const node = context.createMediaElementSource(audio);
-			return node;
-		} catch (e) { }
+			return context.createMediaElementSource(audio);
+		} catch (e) {
+			return undefined;
+		}
 	}, [context, audio]);
 
 	useEffect(() => {
@@ -30,11 +30,5 @@ export default function StreamInNode(props: StreamInNodeProps): JSX.Element | nu
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="input"
-			node={node}
-			{...baseNodeProps}
-		/>
-	);
+	return <CustomNode type="input" node={node} {...baseNodeProps} />;
 }

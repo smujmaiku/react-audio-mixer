@@ -9,19 +9,15 @@ export default function NullNode(props: NullNodeProps): JSX.Element | null {
 	const node = useMemo(() => {
 		try {
 			// I'd use `new AudioNode()` if I could but gain is simple enough
-			const node = context.createGain();
-			node.gain.value = 1;
-			return node;
-		} catch (e) { }
+			const nNode = context.createGain();
+			nNode.gain.value = 1;
+			return nNode;
+		} catch (e) {
+			return undefined;
+		}
 	}, [context]);
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="node"
-			node={node}
-			{...props}
-		/>
-	);
+	return <CustomNode type="node" node={node} {...props} />;
 }

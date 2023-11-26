@@ -1,18 +1,16 @@
 import React, { useMemo } from 'react';
 import useAudio, { BaseOutNodeProps, CustomNode } from '../audioContext';
 import useSpeaker from '../hooks/speaker';
-import useErrorCallback from '../hooks/errorCallback'
+import useErrorCallback from '../hooks/errorCallback';
 
 export interface SpeakerNodeProps extends BaseOutNodeProps {
 	deviceId?: string;
 }
 
-export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null {
-	const {
-		deviceId,
-		onError,
-		...baseNodeProps
-	} = props;
+export default function SpeakerNode(
+	props: SpeakerNodeProps
+): JSX.Element | null {
+	const { deviceId, onError, ...baseNodeProps } = props;
 	const { context } = useAudio();
 
 	const handleError = useErrorCallback(onError);
@@ -21,11 +19,12 @@ export default function SpeakerNode(props: SpeakerNodeProps): JSX.Element | null
 
 	const node = useMemo(() => {
 		try {
-			const node = context.createMediaStreamDestination();
-			audio.srcObject = node.stream;
-			return node;
+			const sNode = context.createMediaStreamDestination();
+			audio.srcObject = sNode.stream;
+			return sNode;
 		} catch (error) {
 			handleError(error);
+			return undefined;
 		}
 	}, [context, audio, handleError]);
 

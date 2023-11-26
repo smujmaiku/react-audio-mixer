@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 let ready = false;
-export const promise = new Promise(resolve => {
+export const promise = new Promise((resolve) => {
 	document.addEventListener('click', resolve);
 	document.addEventListener('touchstart', resolve);
 	document.addEventListener('keydown', resolve);

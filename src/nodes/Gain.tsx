@@ -4,33 +4,24 @@ import useParam, { AudioParamSequence } from '../hooks/param';
 
 export interface GainNodeProps extends BaseNodeProps {
 	gain: number;
-	gainSequence?: AudioParamSequence
+	gainSequence?: AudioParamSequence;
 }
 
 export default function GainNode(props: GainNodeProps): JSX.Element | null {
-	const {
-		gain,
-		gainSequence,
-		...baseNodeProps
-	} = props;
+	const { gain, gainSequence, ...baseNodeProps } = props;
 	const { context } = useAudio();
 
 	const node = useMemo(() => {
 		try {
-			const node = context.createGain();
-			return node;
-		} catch (e) { }
+			return context.createGain();
+		} catch (e) {
+			return undefined;
+		}
 	}, [context]);
 
 	useParam(node?.gain, gain, gainSequence);
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="node"
-			node={node}
-			{...baseNodeProps}
-		/>
-	);
+	return <CustomNode type="node" node={node} {...baseNodeProps} />;
 }
