@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAudio from '../audioContext';
 
-export type UseDevicesT = [MediaDeviceInfo[], boolean]
+export type UseDevicesT = [MediaDeviceInfo[], boolean];
 
 export default function useDevices(): UseDevicesT {
 	const { context } = useAudio();
@@ -14,14 +14,18 @@ export default function useDevices(): UseDevicesT {
 			setAllowed(false);
 			setReady(false);
 			setState([]);
-			return () => { return; };
+			return () => {};
 		}
 
 		let cancel = false;
 
 		if (!allowed) {
-			navigator.mediaDevices.getUserMedia({ video: false, audio: true })
-				.then(() => true, () => false)
+			navigator.mediaDevices
+				.getUserMedia({ video: false, audio: true })
+				.then(
+					() => true,
+					() => false
+				)
 				.then((value) => {
 					if (cancel) return;
 					setAllowed(value);

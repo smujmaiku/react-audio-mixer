@@ -19,9 +19,13 @@ interface AnalyserNodePropsByFloat extends AnalyserNodePropsBase {
 	floatBuffer: true;
 }
 
-export type AnalyserNodeProps = AnalyserNodePropsByByte | AnalyserNodePropsByFloat;
+export type AnalyserNodeProps =
+	| AnalyserNodePropsByByte
+	| AnalyserNodePropsByFloat;
 
-export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | null {
+export default function AnalyserNode(
+	props: AnalyserNodeProps
+): JSX.Element | null {
 	const {
 		type,
 		fftSize = FFT_MIN,
@@ -38,7 +42,9 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 	const node = useMemo(() => {
 		try {
 			return context.createAnalyser();
-		} catch (e) { }
+		} catch (e) {
+			return undefined;
+		}
 	}, [context]);
 
 	useEffect(() => {
@@ -53,12 +59,12 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 	}, [node, min, max]);
 
 	useEffect(() => {
-		if (!node || !ready) return;
+		if (!node || !ready) return undefined!;
 		node.fftSize = fftSize;
 
-		const buffer = floatBuffer ?
-			new Float32Array(node.frequencyBinCount) :
-			new Uint8Array(node.frequencyBinCount)
+		const buffer = floatBuffer
+			? new Float32Array(node.frequencyBinCount)
+			: new Uint8Array(node.frequencyBinCount);
 
 		const update = () => {
 			if (type === 'frequency') {
@@ -86,11 +92,5 @@ export default function AnalyserNode(props: AnalyserNodeProps): JSX.Element | nu
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="output"
-			node={node}
-			{...baseNodeProps}
-		/>
-	);
+	return <CustomNode type="output" node={node} {...baseNodeProps} />;
 }

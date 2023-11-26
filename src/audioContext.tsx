@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import makeListProvider from 'make-list-provider';
-import useNodeLink from './hooks/nodeLink'
+import useNodeLink from './hooks/nodeLink';
 import { ErrorCallback } from './hooks/errorCallback';
 
 export const FFT_MIN = 32;
@@ -41,9 +41,7 @@ export function AudioProvider(props: AudioProviderProps): JSX.Element {
 	const { value, onNodes, children } = props;
 	return (
 		<NodeProvider onChange={onNodes}>
-			<context.Provider value={value}>
-				{children}
-			</context.Provider>
+			<context.Provider value={value}>{children}</context.Provider>
 		</NodeProvider>
 	);
 }
@@ -71,18 +69,20 @@ interface ListenLinkProps {
 function ListenLink(props: ListenLinkProps): JSX.Element {
 	const { link, node, onError } = props;
 
-	const links = useNodes().filter((node) => node.name && node.name === link);
+	const links = useNodes().filter((lNode) => lNode.name && lNode.name === link);
 
-	return <>
-		{links.map(link => (
-			<ConnectNodes
-				key={link.id}
-				source={link.node}
-				destination={node}
-				onError={onError}
-			/>
-		))}
-	</>;
+	return (
+		<>
+			{links.map((lItem) => (
+				<ConnectNodes
+					key={lItem.id}
+					source={lItem.node}
+					destination={node}
+					onError={onError}
+				/>
+			))}
+		</>
+	);
 }
 
 export interface BaseNodeProps {
@@ -101,22 +101,22 @@ export interface CustomNodeProps extends BaseNodeProps {
 }
 
 export function CustomNode(props: CustomNodeProps): JSX.Element {
-	const {
-		name,
-		listen,
-		type,
-		node,
-		onNode,
-		onError,
-	} = props;
+	const { name, listen, type, node, onNode, onError } = props;
 
-	const id: string = useMemo(() => (nodeCount++).toString(36), []);
-	const state: NodeI = useMemo(() => ({ name, type, node, id }), [name, type, node, id]);
+	const id: string = useMemo(() => {
+		const index = nodeCount;
+		nodeCount += 1;
+		return index.toString(36);
+	}, []);
+	const state: NodeI = useMemo(
+		() => ({ name, type, node, id }),
+		[name, type, node, id]
+	);
 	useNode(state);
 
 	useEffect(() => {
 		if (!onNode) return;
-		onNode(node)
+		onNode(node);
 	}, [node, onNode]);
 
 	const listeners = useMemo(() => {
@@ -125,16 +125,16 @@ export function CustomNode(props: CustomNodeProps): JSX.Element {
 		return [];
 	}, [listen]);
 
-	return <>
-		{listeners.map(link => link && (
-			<ListenLink
-				key={link}
-				link={link}
-				node={node}
-				onError={onError}
-			/>
-		))}
-	</>;
+	return (
+		<>
+			{listeners.map(
+				(link) =>
+					link && (
+						<ListenLink key={link} link={link} node={node} onError={onError} />
+					)
+			)}
+		</>
+	);
 }
 
 export const useAudioNodes = useNodes;

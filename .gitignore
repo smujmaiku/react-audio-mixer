@@ -1,9 +1,8 @@
 # build
-lib
+build
 
 # npm
 node_modules
-package-lock.json
 
 # Coverage
 coverage

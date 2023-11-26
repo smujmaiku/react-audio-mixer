@@ -1,25 +1,26 @@
 {
-  "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-    ],
-    "esModuleInterop": true,
-    "target": "es2017",
-    "module": "commonjs",
-    "strict": true,
-    "jsx": "react",
-    "declaration": true,
-    "outDir": "./lib",
-    "resolveJsonModule": true,
-  },
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "node_modules",
-    "coverage",
-    "lib",
-    "**/*.test.*"
-  ]
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ES2020",
+		"lib": [
+			"ES2015",
+			"dom"
+		],
+		"jsx": "react",
+		"esModuleInterop": true,
+		"moduleResolution": "Node",
+		"strict": true,
+		"declaration": true,
+		"outDir": "./build"
+	},
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"coverage",
+		"build",
+		"**/*.stories.*",
+		"**/*.test.*"
+	]
 }

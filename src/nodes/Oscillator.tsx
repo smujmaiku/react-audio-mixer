@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import useAudio, { BaseInNodeProps, CustomNode } from '../audioContext';
-import useParam, { AudioParamSequence } from '../hooks/param'
+import useParam, { AudioParamSequence } from '../hooks/param';
 
 export interface OscillatorNodeProps extends BaseInNodeProps {
 	type?: OscillatorType;
@@ -13,7 +13,9 @@ export interface OscillatorNodeProps extends BaseInNodeProps {
 	onEnded?: () => void;
 }
 
-export default function OscillatorNode(props: OscillatorNodeProps): JSX.Element | null {
+export default function OscillatorNode(
+	props: OscillatorNodeProps
+): JSX.Element | null {
 	const {
 		type = 'sine',
 		frequency,
@@ -34,52 +36,48 @@ export default function OscillatorNode(props: OscillatorNodeProps): JSX.Element 
 		if (!ready) return undefined;
 
 		try {
-			const node = context.createOscillator();
+			const oNode = context.createOscillator();
 
 			if (start) {
-				node.start(start);
+				oNode.start(start);
 			} else {
-				node.start();
+				oNode.start();
 			}
 
 			if (end) {
-				node.stop(end);
+				oNode.stop(end);
 			}
 
-			return node;
-		} catch (e) { }
+			return oNode;
+		} catch (e) {
+			return undefined;
+		}
 	}, [ready, context, start, end]);
 
 	useEffect(() => {
-		if (!node) return;
+		if (!node) return undefined!;
 
 		const handleEnded = () => {
 			if (!onEndedRef.current) return;
 			onEndedRef.current();
-		}
+		};
 		node.addEventListener('ended', handleEnded);
 
 		return () => {
 			node.removeEventListener('ended', handleEnded);
 			node.stop();
-		}
+		};
 	}, [node]);
 
 	useEffect(() => {
 		if (!node) return;
 		node.type = type;
-	}, [node, type])
+	}, [node, type]);
 
 	useParam(node?.frequency, frequency, frequencySequence);
 	useParam(node?.detune, detune, detuneSequence);
 
 	if (!node) return null;
 
-	return (
-		<CustomNode
-			type="input"
-			node={node}
-			{...baseNodeProps}
-		/>
-	);
+	return <CustomNode type="input" node={node} {...baseNodeProps} />;
 }
