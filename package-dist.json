@@ -1,0 +1,4 @@
+{
+	"main": "./audio.js",
+	"types": "./audio.d.ts"
+}
